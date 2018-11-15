@@ -134,7 +134,7 @@ class Player {
 
     render() {
       let dir = Vector.sphereToCart(this.dir.x, -this.dir.y, this.dir.z);
-      camera(this.pos.x, this.pos.y, this.pos.z, dir.x + this.pos.x, dir.y + this.pos.y, dir.z + this.pos.z, 0, -1, 0);
+      camera(this.pos.x, this.pos.y + 25, this.pos.z, dir.x + this.pos.x, dir.y + this.pos.y + 25, dir.z + this.pos.z, 0, -1, 0);
     }
 }
 
