@@ -1,9 +1,17 @@
 var player;
 var ground = [];
+var textures = {
+  PUMPKIN: null
+}
 
+function preload() {
+  textures.PUMPKIN = loadImage('https://i.imgur.com/UQlTlIt.jpg');
+}
 function setup() {
     createCanvas(1000, 1000, WEBGL);
     player = new Player(new Vector(0, 50, 0), new Vector(1, 0, 0));
+
+
 
     for (let i = 0; i < 20; i++) {
         for (let j = 0; j < 20; j++) {
@@ -88,7 +96,9 @@ class Player {
         this.pos = pos;
         this.dir = dir;
         this.forwardVelo = 0;
-        this.friction = 0.50;
+        this.friction = 0.8;
+        this.turnVelo = 0;
+        this.turnFriction = 0.8;
     }
 
     tick() {
@@ -96,31 +106,30 @@ class Player {
         var phi = this.dir.z;
         var radius = 1;
         this.dir = new Vector(radius, theta, phi);
-        var forward = Vector.sphereToCart(radius, -theta, phi);
+        let moving = keyIsDown(87) || keyIsDown(83);
 
-        if (keyIsDown(87)) {
-          this.forwardVelo += 10;
-          this.forwardVelo *= this.friction;
-          // this.friction = 0;
-        } else {
-          this.friction == .50;
+        if (keyIsDown(87)) { //forward
+          this.forwardVelo += 5;
         }
 
-        if (keyIsDown(83)) {
-          this.forwardVelo-=10;
+        if (keyIsDown(83)) { //backward
+          this.forwardVelo -= 5;
         }
+        this.forwardVelo *= this.friction;
 
-        let newpos = forward.mult(this.forwardVelo/100*this.friction)
+        let newpos = Vector.sphereToCart(this.forwardVelo, -theta, phi);
         newpos.y = 0;
         this.pos.add(newpos);
 
-        if (keyIsDown(65)) {
-          this.dir.y -= .01;
+        if (keyIsDown(65) && moving) {
+          this.turnVelo -= .01;
         }
 
-        if (keyIsDown(68)) {
-          this.dir.y += .01;
+        if (keyIsDown(68) && moving) {
+          this.turnVelo += .01;
         }
+        this.turnVelo *= this.turnFriction;
+        this.dir.y += this.turnVelo;
     }
 
     render() {
@@ -144,6 +153,8 @@ class Box {
         push();
         translate(this.pos.x, this.pos.y, this.pos.z);
         stroke(this.col.r, this.col.g, this.col.b);
+        fill(0);
+        texture(textures.PUMPKIN);
         box(this.size);
         pop();
     }
